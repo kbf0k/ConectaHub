@@ -2,11 +2,13 @@
 session_start();
 include 'conexao.php';
 
+$sucesso = false;
+$erro = null;
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
-    $senha = md5($_POST['senha']); // se você mudar o cadastro para password_hash, use password_verify aqui
+    $senha = md5($_POST['senha']);
 
-    // Buscar usuário no banco
     $stmt = $conn->prepare("SELECT id_usuario, nome_usuario, senha_usuario FROM usuarios WHERE email_usuario = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -15,15 +17,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($result->num_rows === 1) {
         $usuario = $result->fetch_assoc();
 
-        // Verifica senha
-        if ($usuario['senha_usuario'] === $senha) { // se usar password_hash, substitua por password_verify()
-            // Cria sessão
+        if ($usuario['senha_usuario'] === $senha) { 
             $_SESSION['id_usuario'] = $usuario['id_usuario'];
             $_SESSION['nome_usuario'] = $usuario['nome_usuario'];
             $_SESSION['email_usuario'] = $email;
 
-            header("Location: dashboard.php"); // página após login
-            exit();
+            $sucesso = true;
         } else {
             $erro = "Senha incorreta!";
         }
@@ -32,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -40,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="../css/cadastro.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -57,6 +56,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p>Não tem conta? <a href="cadastro.php">Cadastre-se</a></p>
         </form>
     </div>
+
+    <?php if ($sucesso): ?>
+        <script>
+            Swal.fire({
+                title: "Sucesso!",
+                text: "Logado com sucesso!",
+                icon: "success",
+                confirmButtonColor: "#6A0DAD"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "feed.php";
+                }
+            });
+        </script>
+    <?php endif; ?>
 </body>
 </html>
-
