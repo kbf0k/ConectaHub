@@ -1,5 +1,5 @@
 <?php
-// include './conexao.php';
+include './conexao.php';
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -74,6 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <title>Perfil</title>
 </head>
 <body>
+    <?php include('nav.php') ?>
 <main class="main-content">
     <div class="pagina-perfil">
         <div id="fundo">
