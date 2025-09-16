@@ -1,109 +1,102 @@
+<?php
+session_start();
+include 'conexao.php';
+
+$usuarioLogado = $_SESSION['id_usuario'] ?? null;
+if (!$usuarioLogado) {
+    header("Location: login.php");
+    exit;
+}
+
+$destinatarioId = $_GET['user_id'] ?? null;
+if (!$destinatarioId) {
+    header("Location: dm.php");
+    exit;
+}
+
+$sql = "SELECT id_usuario, nome_usuario, foto_usuario FROM usuarios WHERE id_usuario = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $destinatarioId);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows !== 1) {
+    echo "Usuário não encontrado.";
+    exit;
+}
+
+$destinatario = $result->fetch_assoc();
+$fotoDestinatario = $destinatario['foto_usuario'] 
+    ? 'data:image/jpeg;base64,' . base64_encode($destinatario['foto_usuario']) 
+    : 'https://via.placeholder.com/45';
+
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <title>Chat</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #6A0DAD, #9B59B6, #E6E6FA);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .chat {
-      width: 400px;
-      height: 500px;
-      background: white;
-      border-radius: 10px;
-      padding: 15px;
-      display: flex;
-      flex-direction: column;
-    }
-    #mensagens {
-      flex: 1;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
-    .msg {
-      padding: 5px 10px;
-      margin: 5px 0;
-      border-radius: 8px;
-      max-width: 80%;
-    }
-    .enviada { background: #9B59B6; color: white; align-self: flex-end; }
-    .recebida { background: #E6E6FA; color: #333; align-self: flex-start; }
-    #form {
-      display: flex;
-    }
-    #mensagem {
-      flex: 1;
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #6A0DAD;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      margin-left: 5px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Chat com <?= htmlspecialchars($destinatario['nome_usuario']) ?></title>
+    <link rel="stylesheet" href="../css/chat.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <div class="chat">
-    <div id="mensagens"></div>
-    <form id="form">
-      <input type="text" id="mensagem" placeholder="Digite uma mensagem..." required>
-      <button type="submit">Enviar</button>
-    </form>
-  </div>
+    <div class="main">
+        <button class="back-btn" onclick="window.history.back()">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+        <div class="chat-container">
+      
+        <div class="chat-header">
+            <img src="<?= $fotoDestinatario ?>" alt="Foto de <?= htmlspecialchars($destinatario['nome_usuario']) ?>">
+            <span><?= htmlspecialchars($destinatario['nome_usuario']) ?></span>
+          </div>
+      
+          <div class="chat-messages" id="chat-messages">
+            <!-- Mensagens serão carregadas via AJAX (long polling futuramente) -->
+          </div>
+      
+      
+          <form class="chat-input" id="chat-form">
+            <input type="text" name="mensagem" id="mensagem" placeholder="Digite sua mensagem..." required>
+              <button type="submit" id="btn-enviar">
+                  <i class="fas fa-paper-plane">      Enviar</i>
+              </button>
+          </form>
+        </div>
+    </div>
 
   <script>
-    const remetente_id = 1; // mock - ID logado
-    const destinatario_id = 2; // mock - ID do outro usuário
-    let ultimoId = 0;
+    const form = document.getElementById("chat-form");
+    const input = document.getElementById("mensagem");
+    const messagesDiv = document.getElementById("chat-messages");
 
-    async function carregarMensagens() {
-      try {
-        const res = await fetch(`receber.php?remetente_id=${remetente_id}&destinatario_id=${destinatario_id}&ultimo_id=${ultimoId}`);
-        const data = await res.json();
-        if (data.length > 0) {
-          data.forEach(msg => {
-            const div = document.createElement("div");
-            div.classList.add("msg");
-            div.classList.add(msg.remetente_id == remetente_id ? "enviada" : "recebida");
-            div.textContent = msg.mensagem;
-            document.getElementById("mensagens").appendChild(div);
-            ultimoId = msg.id;
-          });
-          document.getElementById("mensagens").scrollTop = document.getElementById("mensagens").scrollHeight;
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        carregarMensagens(); // chama de novo (long polling loop)
-      }
-    }
-
-    document.getElementById("form").addEventListener("submit", async (e) => {
+    // Enviar mensagem
+    form.addEventListener("submit", function(e) {
       e.preventDefault();
-      const msg = document.getElementById("mensagem").value;
-      if (msg.trim() === "") return;
+      const msg = input.value.trim();
+      if (!msg) return;
 
-      await fetch("enviar.php", {
+      fetch("enviar_mensagem.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: `remetente_id=${remetente_id}&destinatario_id=${destinatario_id}&mensagem=${encodeURIComponent(msg)}`
+        body: "destinatario_id=<?= $destinatarioId ?>&mensagem=" + encodeURIComponent(msg)
+      })
+      .then(res => res.text())
+      .then(data => {
+        input.value = "";
       });
-      document.getElementById("mensagem").value = "";
     });
 
+    // Long polling para atualizar mensagens
+    function carregarMensagens() {
+      fetch("buscar_mensagens.php?destinatario_id=<?= $destinatarioId ?>")
+        .then(res => res.text())
+        .then(data => {
+          messagesDiv.innerHTML = data;
+          messagesDiv.scrollTop = messagesDiv.scrollHeight;
+          setTimeout(carregarMensagens, 2000); // repete a cada 2s
+        });
+    }
     carregarMensagens();
   </script>
 </body>

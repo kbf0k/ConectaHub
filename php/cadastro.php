@@ -1,5 +1,6 @@
 <?php
 include 'conexao.php';
+$sucesso = false;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nome  = $_POST['nome'];
@@ -15,13 +16,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_FILES['foto']) && $_FILES['foto']['error'] == 0) {
         $fp = fopen($_FILES['foto']['tmp_name'], "rb");
         while (!feof($fp)) {
-            $stmt->send_long_data(3, fread($fp, 8192)); // 3 = índice do quarto parâmetro
+            $stmt->send_long_data(3, fread($fp, 8192));
         }
         fclose($fp);
     }
 
     if ($stmt->execute()) {
-        echo "Usuário cadastrado com sucesso!";
+        $sucesso = true;
     } else {
         echo "Erro: " . $stmt->error;
     }
@@ -37,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
     <link rel="stylesheet" href="../css/cadastro.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <div class="container">
@@ -59,5 +61,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p>Já tem conta? <a href="login.php">Faça login</a></p>
         </form>
     </div>
+
+    <?php if ($sucesso): ?>
+        <script>
+            Swal.fire({
+                title: "Sucesso!",
+                text: "Logado com sucesso!",
+                icon: "success",
+                confirmButtonColor: "#6A0DAD"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "login.php";
+                }
+            });
+        </script>
+    <?php endif; ?>
 </body>
 </html>
