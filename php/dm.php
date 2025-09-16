@@ -25,24 +25,24 @@ $result = $stmt->get_result();
       margin: 0;
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #6A0DAD, #9B59B6, #E6E6FA);
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
       min-height: 100vh;
-      padding: 20px;
     }
     .container {
       background: white;
-      width: 400px;
+      width: 480px;
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       overflow: hidden;
+      align-items: center;
+      justify-content: center;
+      left: 50%;
+      right: 50%;
     }
     .header {
       background: #6A0DAD;
       color: white;
       padding: 15px;
-      font-size: 18px;
+      font-size: 26px;
       text-align: center;
     }
     .user-list {
@@ -75,19 +75,35 @@ $result = $stmt->get_result();
       font-weight: 500;
       color: #333;
     }
+    .main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 80vh;
+    }  
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">Mensagens</div>
-    <ul class="user-list">
-      <?php while ($row = $result->fetch_assoc()): ?>
-        <li class="user-item" onclick="window.location.href='chat.php?user_id=<?=$row['id']?>'">
-          <img src="<?=$row['foto_usuario']?>" alt="Foto de <?=$row['nome_usuario']?>">
-          <span><?=$row['nome_usuario']?></span>
-        </li>
-      <?php endwhile; ?>
-    </ul>
-  </div>
+    <?php
+    include 'nav.php';
+    ?>
+    <div class="main">
+        <div class="container">
+          <div class="header">Mensagens</div>
+          <ul class="user-list">
+            <?php while ($row = $result->fetch_assoc()): ?>
+              <?php
+                $foto = $row['foto_usuario'] 
+                    ? 'data:image/jpeg;base64,' . base64_encode($row['foto_usuario']) 
+                    : 'https://via.placeholder.com/45'; // caso não tenha foto
+              ?>
+              <li class="user-item" onclick="window.location.href='chat.php?user_id=<?=$row['id_usuario']?>'">
+                <img src="<?=$foto?>" alt="Foto de <?=$row['nome_usuario']?>">
+                <span><?=$row['nome_usuario']?></span>
+              </li>
+            <?php endwhile; ?>
+          </ul>
+        </div>
+    </div>
 </body>
 </html>
