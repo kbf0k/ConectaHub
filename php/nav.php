@@ -12,15 +12,18 @@
 <body>
     <header>
         <nav>
-            <ul>
+            <div id="paginas">
+
                 <div class="logo">
                     <img id=""src="../img/logo-conecthub-semfundo.png" alt="">
                 </div>
-                <li><a href="feed.php">Feed</a></li>
-                <li><a href="adicionar_post.php">Adicionar Post</a></li>
-                <li><a href="chat.php">Chat</a></li>
-                <li><a href="perfil.php">Perfil</a></li>
-            </ul>
+                <ul>
+                    <li><a href="feed.php">Feed</a></li>
+                    <li><a href="adicionar_post.php">Adicionar Post</a></li>
+                    <li><a href="chat.php">Chat</a></li>
+                    <li><a href="perfil.php">Perfil</a></li>
+                </ul>
+            </div>
         </nav>
     </header>
 

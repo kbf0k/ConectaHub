@@ -103,19 +103,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <?php include('nav.php') ?>
     <main class="main-content">
         <div class="pagina-perfil">
-            <div id="fundo">
-                <img id="banner-histweb" src="img/HistWebWhite.svg" alt="">
-            </div>
             <form class="informacoes" action="perfil.php" method="POST" enctype="multipart/form-data">
-                <img id='user-perfil' src='mostrar_imagem.php?id=<?php echo $usuario['id_usuario']; ?>' alt='Foto de perfil'>
                 
-                <div class='info'>
-                    <div class='nome-email'>
-                        <input type="hidden" name="id" value="<?php echo $usuario['id_usuario']; ?>">
-                        <label class="nome-acima" for="upload">IMAGEM</label>
-                        <input id="upload" type="file" name="imagem" accept="image/*">
-                        <label class='nome-acima'>NOME</label>
-                        <input id='campo-nome' name="nome" type='text' value='<?php echo $usuario['nome_usuario']; ?>'>
+                    <div id="imgggg">
+                        <img id='user-perfil' src='mostrar_imagem.php?id=<?php echo $usuario['id_usuario']; ?>' alt='Foto de perfil'>
+                    </div>
+                  
+
+                    <div class='info'>
+                        <div class='nome-email'>
+                            <input type="hidden" name="id" value="<?php echo $usuario['id_usuario']; ?>">
+                            <label class="nome-acima" for="upload">IMAGEM</label>
+                            <input id="upload" type="file" name="imagem" accept="image/*">
+                            <label class='nome-acima'>NOME</label>
+                            <input id='campo-nome' name="nome" type='text' value='<?php echo $usuario['nome_usuario']; ?>'>
                         <label class='nome-acima'>EMAIL</label>
                         <input id='campo-email' name="email" type='email' value='<?php echo $usuario['email_usuario']; ?>'>
                         <label class='nome-acima'>SENHA</label>
@@ -129,19 +130,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </form>
             
             <div class="amigos">
-                <div id="titulo">
-                    <p>Amigos</p>
+    <div id="titulo">
+        <p>Amigos</p>
+    </div>
+
+    <?php
+    $sqlAmigos = "SELECT id_usuario, nome_usuario, email_usuario FROM usuarios WHERE id_usuario != ?";
+    $stmtAmigos = $conn->prepare($sqlAmigos);
+    $stmtAmigos->bind_param("i", $id);
+    $stmtAmigos->execute();
+    $resultAmigos = $stmtAmigos->get_result();
+
+    if ($resultAmigos->num_rows > 0) {
+        while ($amigo = $resultAmigos->fetch_assoc()) {
+            echo "
+            <div class='friend'>
+                <div>
+                    <img id='imgAmg' src='mostrar_imagem.php?id={$amigo['id_usuario']}' alt='Foto amigo'>
                 </div>
-                <div class="friend">
-                    <div>
-                        <img id="imgAmg" src="../img/logo-conecthub.jpg" alt="">
-                    </div>
-                    <div id="infos">
-                        <h4>kaiquepheio</h4>
-                        <p>kaique@gmail.com</p>
-                    </div>
+                <div id='infos'>
+                    <h4>{$amigo['nome_usuario']}</h4>
+                    <p>{$amigo['email_usuario']}</p>
                 </div>
-            </div>
+            </div>";
+        }
+    } else {
+        echo "<p>Nenhum amigo encontrado.</p>";
+    }
+    $stmtAmigos->close();
+    ?>
+</div>
+
         </div>
     </main>
     <script>

@@ -14,11 +14,19 @@ nav {
     width: 100%;
 }
 
+#paginas{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+}
+
 nav ul {
     list-style: none;
     display: flex;
     align-items: center;
     justify-content: space-evenly;
+    margin: 0 30px;
 }
 
 nav .logo img {
@@ -29,6 +37,8 @@ nav ul li a {
     color: #6A0DAD;
     text-decoration: none;
     transition: 0.2s ease-in-out;
+    text-align: left;
+    margin: 30px;
 }
 
 nav ul li a:hover {
