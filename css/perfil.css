@@ -1,0 +1,221 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins';
+}
+
+
+.main-content{
+    background-color: rgba(231, 231, 231, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagina-perfil{
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(54, 54, 54);
+    color: white;
+    border-radius: 7px;
+    width: 700px;
+    height: 100%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+#fundo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 700px;
+    height: 140px;
+    background-color: #4B0082;
+    border-top-left-radius: 7px;
+    border-top-right-radius: 7px;
+}
+
+#user-perfil{
+    width: 125px;
+    height: 125px;
+    border-radius: 50%;
+    margin-top: -7%;
+    border: 5px solid rgb(54, 54, 54);
+}
+
+.nome-acima{
+    color: rgba(255, 255, 255, 0.599);
+    float: left;
+    font-size: 14px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-weight: 500;
+}
+
+.nome-email{
+    display: flex;
+    flex-direction: column;
+}
+
+.info{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: rgb(76, 76, 76);
+    border-radius: 10px;
+    width: 630px;
+    margin-top: 20px;
+    margin-bottom: 25px;
+    padding: 20px;
+    padding-bottom: 0;
+}
+
+.informacoes{
+    margin-left: 35px;
+}
+
+#banner-histweb{
+    margin-left: 40px;
+    width: 340px;
+    color: #4B0082;
+    filter: brightness(0) saturate(100%) invert(64%) sepia(7%) saturate(1716%) hue-rotate(75deg) brightness(100%) contrast(84%);
+}
+
+#excluir-conta{
+    background-color: #ff3232;
+    border: none;
+    width: 120px;
+    border-radius: 5px;
+    height: 40px;
+    color: white;
+    font-weight: 500;
+    font-size: 15px;
+    transition: all 0.3s;
+    cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#excluir-conta:hover{
+    background-color: #ff5c5c;
+}
+
+#campo-nome{
+    border-radius: 5px;
+    border: none;
+    background-color: rgb(47, 47, 47);
+    color: rgba(255, 255, 255, 0.803);
+    height: 40px;
+    width: 590px;
+    padding-left: 10px;
+    font-size: 18px;
+    margin-top: 7px;
+    margin-bottom: 7px;
+}
+#aviso{
+    margin-bottom: 30px;
+    font-size: 13.75px;
+    color: rgba(255, 255, 255, 0.516);
+}
+#campo-email{
+    border-radius: 5px;
+    border: none;
+    background-color: rgb(47, 47, 47);
+    color: rgba(255, 255, 255, 0.803);
+    height: 40px;
+    width: 590px;
+    padding-left: 10px;
+    font-size: 18px;
+    margin-top: 7px;
+    margin-bottom: 20px;
+}
+
+#campo-senha{
+    border-radius: 5px;
+    border: none;
+    background-color: rgb(47, 47, 47);
+    color: rgba(255, 255, 255, 0.803);
+    height: 40px;
+    width: 590px;
+    padding-left: 10px;
+    font-size: 18px;
+    margin-top: 7px;
+    margin-bottom: 5px;
+}
+
+#mostrar{
+    margin-bottom: 10px;
+}
+
+#confirma{
+    background-color: #4B0082;
+    border: none;
+    border-radius: 5px;
+    font-weight: 500;
+    color: white;
+    width: 180px;
+    height: 40px;
+    font-size: 15px;
+    align-self: center;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all 0.4s;
+}
+
+#confirma:hover{
+    background-color: #9B59B6;
+}
+
+.exclusao{
+    align-self: center;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+input[type="file"] {
+    margin-top: 7px;
+    margin-bottom: 20px;
+}
+
+
+
+@media (max-width: 768px){
+    .pagina-perfil{
+        width: 300px;
+    }
+    .info{
+        width: 230px;
+    }
+    #campo-nome, #campo-email, #campo-senha, #upload{
+        width: 190px;
+        height: 30px;
+    }
+    #fundo{
+        width: 300px;
+        height: 120px;
+    }
+    #banner-histweb{
+        width: 250px;
+        margin-top: -18px;
+        margin-left: 20px;
+    }
+    #confirma{
+        height: 30px;
+    }
+    #excluir-conta{
+        height: 30px;
+    }
+    #user-perfil{
+        margin-top: -11%;
+        width: 100px;
+        height: 100px;
+    }
+    .nome-acima{
+        font-size: 12px;
+    }
+    #mostrar{
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+}
