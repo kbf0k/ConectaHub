@@ -8,7 +8,8 @@
 }
 
 main {
-    height: 100vh;
+    padding: 20px;
+    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -16,14 +17,19 @@ main {
 }
 
 main .container_post {
-    background-color: ;
     box-shadow: 0 0 10px #282828aa;
     padding: 20px;
     width: 50%;
     border-radius: 20px;
 }
 
+.post {
+    border-top: solid 2px #4B0082;
+    margin-top: 50px;
+}
+
 .post .titulo {
+    margin-top: 30px;
     display: flex;
     align-items: center;
     gap: 5px;
@@ -37,15 +43,18 @@ main .container_post {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: green;
+    border: 1px solid #4B0082;
 }
 
 .post .imagem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     margin-top: 5px;
 }
 
 .post .imagem img {
-    width: 100%;
+    width: 50%;
     border-radius: 5px;
 }
 
@@ -61,4 +70,55 @@ main .container_post {
 
 .post .interacoes .legenda h1 {
     font-size: 15px;
+}
+
+
+
+/* Container de ações (editar/excluir) */
+.acoes_post {
+    margin-left: auto; /* empurra para a direita */
+    display: flex;
+    gap: 10px;
+}
+
+/* Botão de editar */
+.btn-editar {
+    background-color: #6a0dad; /* roxo */
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.3s ease;
+}
+
+.btn-editar:hover {
+    background-color: #4b0082; /* roxo mais escuro */
+}
+
+/* Botão de excluir */
+.btn-excluir {
+    background-color: #ff3b3b; /* vermelho */
+    color: #fff;
+    padding: 5px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.3s ease;
+}
+
+.btn-excluir:hover {
+    background-color: #c00; /* vermelho escuro */
+}
+
+/* Ícones dentro dos botões */
+.btn-editar i,
+.btn-excluir i {
+    font-size: 14px;
 }
