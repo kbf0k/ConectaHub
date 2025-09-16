@@ -19,11 +19,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (move_uploaded_file($imagem["tmp_name"], $diretorio)) {
                 if (!empty($senha)) {
                     $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-                    $sql = "UPDATE usuarios SET nome_usuario = ?, email_usuario = ?, senha_usuario = ?, imagem_usuario = ? WHERE id_usuario = ?";
+                    $sql = "UPDATE usuarios SET nome_usuario = ?, email_usuario = ?, senha_usuario = ?, foto_usuario = ? WHERE id_usuario = ?";
                     $stmt = $conexao->prepare($sql);
                     $stmt->bind_param("ssssi", $nome, $email, $senhaHash, $novoNome, $id);
                 } else {
-                    $sql = "UPDATE usuarios SET nome_usuario = ?, email_usuario = ?, imagem_usuario = ? WHERE id_usuario = ?";
+                    $sql = "UPDATE usuarios SET nome_usuario = ?, email_usuario = ?, ifoto_usuario = ? WHERE id_usuario = ?";
                     $stmt = $conexao->prepare($sql);
                     $stmt->bind_param("sssi", $nome, $email, $novoNome, $id);
                 }
@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <img id="banner-histweb" src="img/HistWebWhite.svg" alt="">
         </div>
         <form class="informacoes" action="perfil.php?id=<?php echo $id; ?>" method="POST" enctype="multipart/form-data">
-            <img id='user-perfil' src='img/<?php echo $usuario['imagem_usuario']; ?>' alt=''>
+            <img id='user-perfil' src='img/<?php echo $usuario['foto_usuario']; ?>' alt=''>
             
             <div class='info'>
                 <div class='nome-email'>
@@ -106,9 +106,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <!-- <?php echo "<a href='./exclusao.php?id=". $_SESSION['id'] ."'><button id='excluir-conta'>Excluir conta</button></a>"; ?> -->
         </div>
         
-        <div id="amigos">
-            <p>Amigos</p>
+        <div class="amigos">
+            <div id="titulo">
+                <p>Amigos</p>
+            </div>
+                <div class="friend">
+                    <div>
+                        <img id="imgAmg" src="../img/logo-conecthub.jpg" alt="">
+                    </div>
+                    <div id="infos">
+                        <h4>kaiquepheio</h4>
+                        <p>kaique@gmail.com</p>
+                    </div>
 
+                    <!-- <?php
+                    if ($resultado_conteudo_pagina->num_rows > 0) {
+                    while ($linha = $resultado_conteudo_pagina->fetch_assoc()) {
+                        echo "<form action='' id='".$linha['titulo_conteudo']."' method='POST' class='section_gloss'>
+                        <img id='img-nova' src='".$linha['imagem_conteudo']."'></img>
+                                <h4>".$linha['titulo_conteudo']."</h4>
+                                <p id='txt-nova'>".$linha['texto_conteudo']."</p>";
+                        echo "</form>";
+                    }
+                }
+                    ?> -->
+                </div>
         </div>
     </div>
     
