@@ -97,3 +97,14 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.esqueceu-senha {
+    color: #6A0DAD;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.esqueceu-senha:hover {
+    text-decoration: underline;
+}
+

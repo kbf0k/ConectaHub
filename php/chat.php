@@ -40,28 +40,28 @@ $fotoDestinatario = $destinatario['foto_usuario']
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
+    <?php
+    include 'nav.php';
+    ?>
     <div class="main">
-        <button class="back-btn" onclick="window.history.back()">
-            <i class="fas fa-arrow-left"></i> Voltar
-        </button>
         <div class="chat-container">
       
-        <div class="chat-header">
-            <img src="<?= $fotoDestinatario ?>" alt="Foto de <?= htmlspecialchars($destinatario['nome_usuario']) ?>">
-            <span><?= htmlspecialchars($destinatario['nome_usuario']) ?></span>
-          </div>
+            <div class="chat-header">
+                <img src="<?= $fotoDestinatario ?>" alt="Foto de <?= htmlspecialchars($destinatario['nome_usuario']) ?>">
+                <span><?= htmlspecialchars($destinatario['nome_usuario']) ?></span>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                    <!-- Mensagens serão carregadas via AJAX (long polling futuramente) -->
+            </div>
       
-          <div class="chat-messages" id="chat-messages">
-            <!-- Mensagens serão carregadas via AJAX (long polling futuramente) -->
-          </div>
       
-      
-          <form class="chat-input" id="chat-form">
-            <input type="text" name="mensagem" id="mensagem" placeholder="Digite sua mensagem..." required>
-              <button type="submit" id="btn-enviar">
-                  <i class="fas fa-paper-plane">      Enviar</i>
-              </button>
-          </form>
+            <form class="chat-input" id="chat-form">
+                <input type="text" name="mensagem" id="mensagem" placeholder="Digite sua mensagem..." required>
+                <button type="submit" id="btn-enviar">
+                    <i class="fas fa-paper-plane">      Enviar</i>
+                </button>
+            </form>
         </div>
     </div>
 
