@@ -2,11 +2,29 @@
 include './conexao.php';
 session_start();
 
+if (!isset($_SESSION['id_usuario'])) {
+    die("Usuário não está logado.");
+}
+$id = $_SESSION['id_usuario'];
+
+
+$sql = "SELECT * FROM usuarios WHERE id_usuario = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows == 1) {
+    $usuario = $result->fetch_assoc();
+} else {
+    die("Erro! Usuário não consta no Banco de Dados.");
+}
+
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nome = $_POST["nome"];
     $email = $_POST["email"];
     $senha = $_POST["senha"];
-
 
     if (isset($_FILES["imagem"]) && $_FILES["imagem"]["error"] == 0) {
         $imagem = $_FILES["imagem"];
@@ -19,12 +37,16 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if (move_uploaded_file($imagem["tmp_name"], $diretorio)) {
                 if (!empty($senha)) {
                     $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-                    $sql = "UPDATE usuarios SET nome_usuario = ?, email_usuario = ?, senha_usuario = ?, foto_usuario = ? WHERE id_usuario = ?";
-                    $stmt = $conexao->prepare($sql);
+                    $sql = "UPDATE usuarios 
+                            SET nome_usuario = ?, email_usuario = ?, senha_usuario = ?, foto_usuario = ? 
+                            WHERE id_usuario = ?";
+                    $stmt = $conn->prepare($sql);
                     $stmt->bind_param("ssssi", $nome, $email, $senhaHash, $novoNome, $id);
                 } else {
-                    $sql = "UPDATE usuarios SET nome_usuario = ?, email_usuario = ?, ifoto_usuario = ? WHERE id_usuario = ?";
-                    $stmt = $conexao->prepare($sql);
+                    $sql = "UPDATE usuarios 
+                            SET nome_usuario = ?, email_usuario = ?, foto_usuario = ? 
+                            WHERE id_usuario = ?";
+                    $stmt = $conn->prepare($sql);
                     $stmt->bind_param("sssi", $nome, $email, $novoNome, $id);
                 }
             } else {
@@ -38,21 +60,25 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } else {
         if (!empty($senha)) {
             $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-            $sql = "UPDATE usuarios SET nome_usuario = ?, email_usuario = ?, senha_usuario = ? WHERE id_usuario = ?";
-            $stmt = $conexao->prepare($sql);
+            $sql = "UPDATE usuarios 
+                    SET nome_usuario = ?, email_usuario = ?, senha_usuario = ? 
+                    WHERE id_usuario = ?";
+            $stmt = $conn->prepare($sql);
             $stmt->bind_param("sssi", $nome, $email, $senhaHash, $id);
         } else {
-            $sql = "UPDATE usuarios SET nome_usuario = ?, email_usuario = ? WHERE id_usuario = ?";
-            $stmt = $conexao->prepare($sql);
+            $sql = "UPDATE usuarios 
+                    SET nome_usuario = ?, email_usuario = ? 
+                    WHERE id_usuario = ?";
+            $stmt = $conn->prepare($sql);
             $stmt->bind_param("ssi", $nome, $email, $id);
         }
     }
 
     if ($stmt->execute()) {
-        header("Location: perfil.php?id=".$id);
+        header("Location: perfil.php");
         exit;
     } else {
-        echo "Erro ao atualizar informações: " . $conexao->error;
+        echo "Erro ao atualizar informações: " . $conn->error;
     }
     $stmt->close();
 }
@@ -65,52 +91,47 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="./img/HW-icon.png" type="image/x-icon">
     <link rel="stylesheet" href="../css/perfil.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="./main.js" defer></script>
+    <script src="../js/main.js" defer></script>
     <title>Perfil</title>
 </head>
 <body>
     <?php include('nav.php') ?>
-<main class="main-content">
-    <div class="pagina-perfil">
-        <div id="fundo">
-            <img id="banner-histweb" src="img/HistWebWhite.svg" alt="">
-        </div>
-        <form class="informacoes" action="perfil.php?id=<?php echo $id; ?>" method="POST" enctype="multipart/form-data">
-            <img id='user-perfil' src='img/<?php echo $usuario['foto_usuario']; ?>' alt=''>
-            
-            <div class='info'>
-                <div class='nome-email'>
-                    <input type="hidden" name="id" value="<?php echo $usuario['id_usuario']; ?>">
-                    <label class="nome-acima" for="upload">IMAGEM</label>
-                    <input id="upload" type="file" name="imagem" accept="image/*">
-                    <label class='nome-acima'>NOME</label>
-                    <input id='campo-nome' name="nome" type='text' value='<?php echo $usuario['nome_usuario']; ?>'>
-                    <label class='nome-acima'>EMAIL</label>
-                    <input id='campo-email' name="email" type='email' value='<?php echo $usuario['email_usuario']; ?>'>
-                    <label class='nome-acima'>SENHA</label>
-                    <input id='campo-senha' name="senha" type='password' placeholder="Nova senha">
-                    <div id='mostrar'>
-                        <input type='checkbox' onclick='mostrarSenha()'> Mostrar senha
+    <main class="main-content">
+        <div class="pagina-perfil">
+            <div id="fundo">
+                <img id="banner-histweb" src="img/HistWebWhite.svg" alt="">
+            </div>
+            <form class="informacoes" action="perfil.php" method="POST" enctype="multipart/form-data">
+                <img id='user-perfil' src='mostrar_imagem.php?id=<?php echo $usuario['id_usuario']; ?>' alt='Foto de perfil'>
+                
+                <div class='info'>
+                    <div class='nome-email'>
+                        <input type="hidden" name="id" value="<?php echo $usuario['id_usuario']; ?>">
+                        <label class="nome-acima" for="upload">IMAGEM</label>
+                        <input id="upload" type="file" name="imagem" accept="image/*">
+                        <label class='nome-acima'>NOME</label>
+                        <input id='campo-nome' name="nome" type='text' value='<?php echo $usuario['nome_usuario']; ?>'>
+                        <label class='nome-acima'>EMAIL</label>
+                        <input id='campo-email' name="email" type='email' value='<?php echo $usuario['email_usuario']; ?>'>
+                        <label class='nome-acima'>SENHA</label>
+                        <input id='campo-senha' name="senha" type='password' placeholder="Nova senha">
+                        <div id='mostrar'>
+                            <input type='checkbox' onclick='mostrarSenha()'> Mostrar senha
+                        </div>
+                        <button type="submit" id="confirma">Confirmar alterações</button>
                     </div>
-                    <button type="submit" id="confirma">Confirmar alterações</button>
                 </div>
-            </div>
-        </form>
-
-        <div class="exclusao">
-            <p class='nome-acima'>EXCLUIR SUA CONTA</p>
-            <!-- <?php echo "<a href='./exclusao.php?id=". $_SESSION['id'] ."'><button id='excluir-conta'>Excluir conta</button></a>"; ?> -->
-        </div>
-        
-        <div class="amigos">
-            <div id="titulo">
-                <p>Amigos</p>
-            </div>
+            </form>
+            
+            <div class="amigos">
+                <div id="titulo">
+                    <p>Amigos</p>
+                </div>
                 <div class="friend">
                     <div>
                         <img id="imgAmg" src="../img/logo-conecthub.jpg" alt="">
@@ -119,32 +140,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                         <h4>kaiquepheio</h4>
                         <p>kaique@gmail.com</p>
                     </div>
-
-                    <!-- <?php
-                    if ($resultado_conteudo_pagina->num_rows > 0) {
-                    while ($linha = $resultado_conteudo_pagina->fetch_assoc()) {
-                        echo "<form action='' id='".$linha['titulo_conteudo']."' method='POST' class='section_gloss'>
-                        <img id='img-nova' src='".$linha['imagem_conteudo']."'></img>
-                                <h4>".$linha['titulo_conteudo']."</h4>
-                                <p id='txt-nova'>".$linha['texto_conteudo']."</p>";
-                        echo "</form>";
-                    }
-                }
-                    ?> -->
                 </div>
+            </div>
         </div>
-    </div>
-    
-</main>
-<script>
-    function mostrarSenha() {
-        var x = document.getElementById("campo-senha");
-        if (x.type === "password") {
-            x.type = "text";
-        } else {
-            x.type = "password";
+    </main>
+    <script>
+        function mostrarSenha() {
+            var x = document.getElementById("campo-senha");
+            if (x.type === "password") {
+                x.type = "text";
+            } else {
+                x.type = "password";
+            }
         }
-    }
-</script>
+    </script>
 </body>
 </html>
