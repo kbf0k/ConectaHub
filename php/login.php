@@ -7,7 +7,7 @@ $erro = null;
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
-    $senha = md5($_POST['senha']);
+    $senha = $_POST['senha']; 
 
     $stmt = $conn->prepare("SELECT id_usuario, nome_usuario, senha_usuario FROM usuarios WHERE email_usuario = ?");
     $stmt->bind_param("s", $email);
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($result->num_rows === 1) {
         $usuario = $result->fetch_assoc();
 
-        if ($usuario['senha_usuario'] === $senha) { 
+        if (password_verify($senha, $usuario['senha_usuario'])) { 
             $_SESSION['id_usuario'] = $usuario['id_usuario'];
             $_SESSION['nome_usuario'] = $usuario['nome_usuario'];
             $_SESSION['email_usuario'] = $email;

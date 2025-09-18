@@ -2,11 +2,12 @@
 include './conexao.php';
 session_start();
 
+$sucesso = false;
+
 if (!isset($_SESSION['id_usuario'])) {
     die("Usuário não está logado.");
 }
 $id = $_SESSION['id_usuario'];
-
 
 $sql = "SELECT * FROM usuarios WHERE id_usuario = ?";
 $stmt = $conn->prepare($sql);
@@ -20,7 +21,6 @@ if ($result->num_rows == 1) {
     die("Erro! Usuário não consta no Banco de Dados.");
 }
 
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nome = $_POST["nome"];
     $email = $_POST["email"];
@@ -32,29 +32,28 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if (in_array($extensao, ["jpg", "jpeg", "png", "gif"])) {
             $novoNome = uniqid() . "." . $extensao;
-            $diretorio = "img/" . $novoNome;
+            $diretorio = __DIR__ . "/../img/" . $novoNome;
 
             if (move_uploaded_file($imagem["tmp_name"], $diretorio)) {
-                if (!empty($senha)) {
-                    $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-                    $sql = "UPDATE usuarios 
-                            SET nome_usuario = ?, email_usuario = ?, senha_usuario = ?, foto_usuario = ? 
-                            WHERE id_usuario = ?";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("ssssi", $nome, $email, $senhaHash, $novoNome, $id);
-                } else {
-                    $sql = "UPDATE usuarios 
-                            SET nome_usuario = ?, email_usuario = ?, foto_usuario = ? 
-                            WHERE id_usuario = ?";
-                    $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("sssi", $nome, $email, $novoNome, $id);
-                }
-            } else {
-                echo "Erro ao fazer upload da imagem.";
-                exit;
-            }
+        $caminhoRelativo = "img/" . $novoNome; 
+    if (!empty($senha)) {
+        $senhaHash = password_hash($senha, PASSWORD_DEFAULT);
+        $sql = "UPDATE usuarios 
+                SET nome_usuario = ?, email_usuario = ?, senha_usuario = ?, foto_usuario = ? 
+                WHERE id_usuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssi", $nome, $email, $senhaHash, $caminhoRelativo, $id);
+    } else {
+        $sql = "UPDATE usuarios 
+                SET nome_usuario = ?, email_usuario = ?, foto_usuario = ? 
+                WHERE id_usuario = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("sssi", $nome, $email, $caminhoRelativo, $id);
+    }
+}
+
         } else {
-            echo "Formato de imagem inválido. Apenas JPG, JPEG, PNG e GIF são permitidos.";
+            echo "Formato de imagem inválido.";
             exit;
         }
     } else {
@@ -75,8 +74,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     if ($stmt->execute()) {
-        header("Location: perfil.php");
-        exit;
+        $sucesso = true;
+
     } else {
         echo "Erro ao atualizar informações: " . $conn->error;
     }
@@ -84,17 +83,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="./img/HW-icon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/logo-conecthub-semfundo.png" type="image/x-icon">
     <link rel="stylesheet" href="../css/perfil.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../js/main.js" defer></script>
     <title>Perfil</title>
@@ -106,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <form class="informacoes" action="perfil.php" method="POST" enctype="multipart/form-data">
                 
                     <div id="imgggg">
-                        <img id='user-perfil' src='mostrar_imagem.php?id=<?php echo $usuario['id_usuario']; ?>' alt='Foto de perfil'>
+                        <img id='user-perfil' src='../<?php echo $usuario['foto_usuario']; ?>' alt='Foto de perfil'>
                     </div>
                   
 
@@ -128,40 +129,59 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                     </div>
                 </div>
             </form>
+        <?php if ($sucesso): ?>
+            <script>
+                Swal.fire({
+                    title: "Sucesso!",
+                    text: "Alterações realizadas!",
+                    icon: "success",
+                    confirmButtonColor: "#6A0DAD"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "perfil.php";
+                    }
+                });
+            </script>
+        <?php endif; ?>
+
+            <div class="logout-container">
+                <a href="logout.php" class="logout-btn">Sair
+                <i class='bxr  bx-arrow-to-right-stroke'  ></i> </a>
+            </div>
             
-            <div class="amigos">
-    <div id="titulo">
-        <p>Amigos</p>
-    </div>
+        <div class="amigos">
+            <div id="titulo">
+                <p>Amigos</p>
+            </div>
 
-    <?php
-    $sqlAmigos = "SELECT id_usuario, nome_usuario, email_usuario FROM usuarios WHERE id_usuario != ?";
-    $stmtAmigos = $conn->prepare($sqlAmigos);
-    $stmtAmigos->bind_param("i", $id);
-    $stmtAmigos->execute();
-    $resultAmigos = $stmtAmigos->get_result();
+            <?php
+            $sqlAmigos = "SELECT id_usuario, nome_usuario, email_usuario FROM usuarios WHERE id_usuario != ?";
+            $stmtAmigos = $conn->prepare($sqlAmigos);
+            $stmtAmigos->bind_param("i", $id);
+            $stmtAmigos->execute();
+            $resultAmigos = $stmtAmigos->get_result();
 
-    if ($resultAmigos->num_rows > 0) {
-        while ($amigo = $resultAmigos->fetch_assoc()) {
-            echo "
-            <div class='friend'>
-                <div>
-                    <img id='imgAmg' src='mostrar_imagem.php?id={$amigo['id_usuario']}' alt='Foto amigo'>
-                </div>
-                <div id='infos'>
-                    <h4>{$amigo['nome_usuario']}</h4>
-                    <p>{$amigo['email_usuario']}</p>
-                </div>
-            </div>";
-        }
-    } else {
-        echo "<p>Nenhum amigo encontrado.</p>";
-    }
-    $stmtAmigos->close();
-    ?>
-</div>
-
+            if ($resultAmigos->num_rows > 0) {
+                while ($amigo = $resultAmigos->fetch_assoc()) {
+                    echo "
+                    <div class='friend'>
+                        <div>
+                            <img id='imgAmg' src='mostrar_imagem.php?id={$amigo['id_usuario']}' alt='Foto amigo'>
+                        </div>
+                        <div id='infos'>
+                            <h4>{$amigo['nome_usuario']}</h4>
+                            <p>{$amigo['email_usuario']}</p>
+                        </div>
+                    </div>";
+                }
+            } else {
+                echo "<p>Nenhum amigo encontrado.</p>";
+            }
+            $stmtAmigos->close();
+            ?>
         </div>
+
+    </div>
     </main>
     <script>
         function mostrarSenha() {
