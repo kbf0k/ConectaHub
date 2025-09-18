@@ -44,3 +44,10 @@ nav ul li a {
 nav ul li a:hover {
     color: #2c0548
 }
+
+#foto-perfil{
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    border: none;
+}

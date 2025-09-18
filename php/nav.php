@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-
+<?php
+include './conexao.php';
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +22,7 @@
                     <li><a href="feed.php">Feed</a></li>
                     <li><a href="adicionar_post.php">Adicionar Post</a></li>
                     <li><a href="chat.php">Chat</a></li>
-                    <li><a href="perfil.php">Perfil</a></li>
+                    <li><a href="perfil.php"><img id='foto-perfil' src='../<?php echo $usuario['foto_usuario']; ?>' alt='Foto de perfil'></a></li>
                 </ul>
             </div>
         </nav>
