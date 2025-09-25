@@ -51,27 +51,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php include('nav.php'); ?>
 
     <main>
-        <div class="container">
+        <div class="modal">
 
-            <section class="form-section">
-                <h2>Adicionar Novo Post</h2>
+            <div class="header">Adicionar Post</div>
+            <div class="container">
                 <form method="POST" enctype="multipart/form-data">
-
+    
                     <div class="form-group">
                         <label for="media">Imagem ou Vídeo:</label>
                         <input type="file" id="media" name="media" accept="image/*,video/*" required>
                     </div>
-
+    
                     <div class="form-group">
                         <label for="conteudo">Escreva algo:</label>
                         <textarea id="conteudo" name="conteudo" placeholder="O que você está pensando?" required></textarea>
                     </div>
-
+    
                     <div class="form-group">
                         <button type="submit">Publicar</button>
                     </div>
                 </form>
-            </section>
+            </div>
         </div>
     </main>
 </body>

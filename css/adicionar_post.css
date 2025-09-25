@@ -6,35 +6,43 @@
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-main{
+main {
     background: linear-gradient(135deg, #5a189a, #9d4edd, #c77dff);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 /* Container principal */
+.modal {
+    background: white;
+    width: 480px;
+    max-width: 80%;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    left: 50%;
+    right: 50%;
+}
+
 .container {
-    margin-top: 80px;
-    width: 100%;
-    max-width: 600px;
     padding: 20px;
+    max-height: 500px;
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-
-/* Card de formulário */
-.form-section {
-    background: #fff;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-    animation: fadeIn 0.5s ease-in-out;
-}
-
-.form-section h2 {
+.header {
+    background: #6A0DAD;
+    color: white;
+    padding: 15px;
+    font-size: 26px;
     text-align: center;
-    margin-bottom: 20px;
-    color: #5a189a;
 }
 
 /* Campos do formulário */
@@ -66,7 +74,8 @@ textarea {
 }
 
 /* Foco */
-input:focus, textarea:focus {
+input:focus,
+textarea:focus {
     border-color: #9d4edd;
     outline: none;
     box-shadow: 0 0 8px rgba(157, 78, 221, 0.5);
@@ -88,8 +97,48 @@ button:hover {
     background: #7b2cbf;
 }
 
+.back-btn-container {
+    position: absolute;
+    margin-top: 30px;
+    left: 38%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #6A0DAD;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: background 0.2s, transform 0.2s;
+}
+
+.back-btn i {
+    font-size: 18px;
+}
+
+.back-btn:hover {
+    background: #9B59B6;
+    transform: translateY(-2px);
+}
+
 /* Animação */
 @keyframes fadeIn {
-    from {opacity: 0; transform: translateY(-20px);}
-    to {opacity: 1; transform: translateY(0);}
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

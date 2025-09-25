@@ -65,28 +65,36 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/adicionar_post.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <title>Editar Post</title>
 </head>
 
 <body>
     <?php include('nav.php'); ?>
 
+    <div class="back-btn-container">
+        <button class="back-btn" onclick="history.back()">
+            <i class="fas fa-arrow-left"></i> Voltar
+        </button>
+    </div>
     <main>
-        <div class="container">
-            <section class="form-section">
-                <h2>Editar Post</h2>
+        <div class="modal">
+            <div class="header">Editar Post</div>
+            <div class="container">
                 <form method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="imagem_post">Imagem do post:</label>
                         <?php if (!empty($post['imagem_post'])): ?>
-                            <img src="data:image/jpeg;base64,<?= base64_encode($post['imagem_post']) ?>" alt="Post" style="max-width: 300px; display:block; margin-bottom:10px;">
+                            <img src="data:image/jpeg;base64,<?= base64_encode($post['imagem_post']) ?>" alt="Post"
+                                style="max-width: 300px; display:block; margin-bottom:10px;">
                         <?php endif; ?>
                         <input type="file" id="imagem_post" name="imagem_post" accept="image/*,video/*">
                     </div>
 
                     <div class="form-group">
                         <label for="descricao_post">Descrição:</label>
-                        <textarea id="descricao_post" name="descricao_post" required><?= htmlspecialchars($post['descricao_post']) ?></textarea>
+                        <textarea id="descricao_post" name="descricao_post"
+                            required><?= htmlspecialchars($post['descricao_post']) ?></textarea>
                     </div>
 
                     <div class="form-group">
@@ -94,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <a href="feed.php" class="btn-cancel">Cancelar</a>
                     </div>
                 </form>
-            </section>
+            </div>
         </div>
     </main>
 </body>

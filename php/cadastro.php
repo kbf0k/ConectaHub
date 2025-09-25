@@ -5,7 +5,7 @@ $sucesso = false;
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nome  = $_POST['nome'];
     $email = $_POST['email'];
-    $senha = md5($_POST['senha']);
+    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
 
     $stmt = $conn->prepare("INSERT INTO usuarios (nome_usuario, email_usuario, senha_usuario, foto_usuario) VALUES (?, ?, ?, ?)");
     

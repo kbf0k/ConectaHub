@@ -1,6 +1,6 @@
 <?php
-session_start();
 include 'conexao.php';
+session_start();
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
@@ -9,7 +9,6 @@ if (!isset($_SESSION['id_usuario'])) {
 
 $id_usuario = $_SESSION['id_usuario'];
 
-// Consulta foto e nome do usuário logado
 $stmt = $conn->prepare("SELECT foto_usuario, nome_usuario FROM usuarios WHERE id_usuario = ?");
 $stmt->bind_param("i", $id_usuario);
 $stmt->execute();
@@ -23,7 +22,6 @@ if ($resultado->num_rows > 0) {
     $nomeUsuario = $linha['nome_usuario'];
 }
 
-// Consulta todos os posts com JOIN para pegar dados do dono do post
 $sqlPosts = "SELECT p.id_post, p.imagem_post, p.descricao_post, p.fk_usuario_id, u.nome_usuario, u.foto_usuario
     FROM posts p
     INNER JOIN usuarios u ON p.fk_usuario_id = u.id_usuario
@@ -31,10 +29,6 @@ $sqlPosts = "SELECT p.id_post, p.imagem_post, p.descricao_post, p.fk_usuario_id,
 ";
 $posts = $conn->query($sqlPosts);
 
-
-
-
-// Consulta todos os posts com JOIN
 $sqlPosts = "SELECT p.id_post, p.imagem_post, p.descricao_post, p.fk_usuario_id, 
            u.nome_usuario, u.foto_usuario,
            (SELECT COUNT(*) FROM curtidas c WHERE c.fk_id_post = p.id_post) AS total_curtidas,
@@ -77,7 +71,6 @@ $posts = $stmtPosts->get_result();
                             <?php endif; ?>
                             <p>@<?= htmlspecialchars($post['nome_usuario']) ?></p>
 
-                            <!-- Botões de editar/excluir apenas para o dono do post -->
                             <?php if ($post['fk_usuario_id'] == $id_usuario): ?>
                                 <div class="acoes_post">
                                     <a href="editar_post.php?id=<?= $post['id_post'] ?>" class="btn-editar">
@@ -112,7 +105,6 @@ $posts = $stmtPosts->get_result();
                                 <p><?= nl2br(htmlspecialchars($post['descricao_post'])) ?></p>
                             </div>
 
-                            <!-- Formulário de comentário -->
                             <div class="comentario">
                                 <h1>Comentar</h1>
                                 <form action="processa_comentario.php" method="POST">
@@ -122,7 +114,6 @@ $posts = $stmtPosts->get_result();
                                 </form>
                             </div>
 
-                            <!-- Lista de comentários -->
                             <?php
                             $stmtComentarios = $conn->prepare("
                                 SELECT c.mensagem_comentarios, u.nome_usuario, u.foto_usuario

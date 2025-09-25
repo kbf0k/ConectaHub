@@ -22,9 +22,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($result->num_rows === 1) {
             $usuario = $result->fetch_assoc();
-            $senhaHash = md5($novaSenha);
+
+            $senhaHash = password_hash($novaSenha, PASSWORD_DEFAULT);
+
             $stmt = $conn->prepare("UPDATE usuarios SET senha_usuario = ? WHERE id_usuario = ?");
             $stmt->bind_param("si", $senhaHash, $usuario['id_usuario']);
+
             if ($stmt->execute()) {
                 $sucesso = true;
             } else {
@@ -36,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -50,7 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="container">
     <h2 class="titulo">Recuperar Senha</h2>
 
-    <?php if ($erro) echo "<p style='color:red;'>$erro</p>"; ?>
+    <?php if ($erro): ?>
+        <p style="color:red;"><?= htmlspecialchars($erro) ?></p>
+    <?php endif; ?>
 
     <form method="POST">
         <label>E-mail:</label>
